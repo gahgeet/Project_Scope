@@ -20,6 +20,7 @@ export function HandleEvents(){
         Init.state.mousePosition.x = e.offsetX;
         Init.state.mousePosition.y = e.offsetY;
     });
+
 }
 
 export function ClearBackground(){
@@ -50,14 +51,23 @@ export function DrawRectangle(color,rectangle){
 export function CreateSprite(path,position,division,amount,exposure,scale){
     const sprite = new Sprite();
     sprite.image.src = path;
+    Init.state.assetCount ++;
+    sprite.image.onload = function(){
+        console.log("loaded!");
+        console.log(sprite.image.naturalWidth);
+        console.log(sprite.image.naturalHeight)
+        Init.state.assetCount --;
+        sprite.source.w = sprite.image.naturalWidth/division.x;
+        sprite.source.h = sprite.image.naturalHeight/division.y;
+        sprite.output.w = sprite.source.w*scale;
+        sprite.output.h = sprite.source.h*scale;
+    }
     sprite.source.x = 0;
     sprite.source.y = 0;
-    sprite.source.w = sprite.image.naturalWidth/division.x;
-    sprite.source.h = sprite.image.naturalHeight/division.y;
+    
     sprite.output.x = position.x;
     sprite.output.y = position.y;
-    sprite.output.w = sprite.source.w*scale;
-    sprite.output.h = sprite.source.h*scale;
+    
     sprite.current.x = 0;
     sprite.current.y = 0;
     sprite.amount = amount;
@@ -110,6 +120,8 @@ export function AnimateSprite(sprite){
  */
 export function RunFPS(fps,callback){
     requestAnimationFrame(callback);
+    if (Init.state.assetCount)return false;
+
     const deltaTime = performance.now() - Init.state.lastTime;
     const targetDuration = 1000/fps;
     if (deltaTime <= targetDuration)return false;

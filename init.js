@@ -19,6 +19,8 @@ export const context = ctx;
 class State {
     lastTime = 0;
     mousePosition = new Shape.Vector2();
+    loaded = false;
+    assetCount = 0;
 };
 
 export const state = new State();

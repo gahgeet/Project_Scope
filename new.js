@@ -8,6 +8,7 @@ const sprite = Happy.CreateSprite(
     {x:0,y:0},{x:4,y:4},16,10,0.5
 );
 
+
 let frames = 0;
 function Main(){
     if (!Happy.RunFPS(60,Main))return;
