@@ -1,24 +1,13 @@
 import * as Init from "./init.js"
+import * as Shape from "./shape.js"
 
-export class Rectangle{
-    x = 0;
-    y = 0;
-    w = 100;
-    h = 100;
-};
-
-export class Vector2{
-    x = 0;
-    y = 0;
-}
 
 export class Sprite{
     image = new Image();
-    source = new Rectangle();
-    position = new Vector2();
-    size = new Vector2();
-    current = new Vector2();
-    division = new Vector2();
+    source = new Shape.Rectangle();
+    output = new Shape.Rectangle();
+    current = new Shape.Vector2();
+    division = new Shape.Vector2();
     exposure = 0;
     amount = 0;
     counter = 0;
@@ -27,6 +16,10 @@ export class Sprite{
 
 export function HandleEvents(){
     window.addEventListener("resize",ResizeCanvas);
+    window.addEventListener("mousemove",function(e){
+        Init.state.mousePosition.x = e.offsetX;
+        Init.state.mousePosition.y = e.offsetY;
+    });
 }
 
 export function ClearBackground(){
@@ -36,7 +29,7 @@ export function ClearBackground(){
 }
 /**
  * @param {string} color - The fill color (e.g., 'red', '#fff')
- * @param {Rectangle} rectangle - The rectangle data to draw
+ * @param {Shape.Rectangle} rectangle - The rectangle data to draw
  */
 export function DrawRectangle(color,rectangle){
     Init.context.fillStyle = color;
@@ -47,8 +40,8 @@ export function DrawRectangle(color,rectangle){
 /**
  * 
  * @param {string} path 
- * @param {Vector2} position 
- * @param {Vector2} division 
+ * @param {Shape.Vector2} position 
+ * @param {Shape.Vector2} division 
  * @param {number} amount 
  * @param {number} exposure 
  * @param {number} scale 
@@ -57,14 +50,14 @@ export function DrawRectangle(color,rectangle){
 export function CreateSprite(path,position,division,amount,exposure,scale){
     const sprite = new Sprite();
     sprite.image.src = path;
-    sprite.source.x = position.x;
-    sprite.source.y = position.y;
+    sprite.source.x = 0;
+    sprite.source.y = 0;
     sprite.source.w = sprite.image.naturalWidth/division.x;
     sprite.source.h = sprite.image.naturalHeight/division.y;
-    sprite.position.x = 0;
-    sprite.position.y = 0;
-    sprite.size.x = sprite.source.w*scale;
-    sprite.size.y = sprite.source.h*scale;
+    sprite.output.x = position.x;
+    sprite.output.y = position.y;
+    sprite.output.w = sprite.source.w*scale;
+    sprite.output.h = sprite.source.h*scale;
     sprite.current.x = 0;
     sprite.current.y = 0;
     sprite.amount = amount;
@@ -80,7 +73,7 @@ export function DrawSprite(sprite){
     Init.context.drawImage(
         sprite.image,
         sprite.source.x,sprite.source.y,sprite.source.w,sprite.source.h,
-        sprite.position.x,sprite.position.y,sprite.size.x,sprite.size.y
+        sprite.output.x,sprite.output.y,sprite.output.w,sprite.output.h
     );
 }
 /**
@@ -129,4 +122,20 @@ export function RunFPS(fps,callback){
 export function ResizeCanvas(){
     Init.canvas.width = window.innerWidth;
     Init.canvas.height = window.innerHeight;
+}
+/**
+ * 
+ * @param {Shape.Rectangle} rectangle 
+ * @returns 
+ */
+export function MouseHover(rectangle){
+    if (
+        Init.state.mousePosition.x >= rectangle.x
+        && Init.state.mousePosition.x <= rectangle.x+rectangle.w
+        && Init.state.mousePosition.y >= rectangle.y
+        && Init.state.mousePosition.y <= rectangle.y+rectangle.h
+    ){
+        return true;
+    }
+    return false;
 }

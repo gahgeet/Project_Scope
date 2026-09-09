@@ -5,7 +5,7 @@ import * as Shape from "./shape.js"
 let box = new Shape.Rectangle();
 const sprite = Happy.CreateSprite(
     "./images/spritesheet.png",
-    {x:100,y:100},{x:4,y:4},16,10,0.1
+    {x:0,y:0},{x:4,y:4},16,10,0.5
 );
 
 let frames = 0;
@@ -13,19 +13,14 @@ function Main(){
     if (!Happy.RunFPS(60,Main))return;
     frames ++;
     box.x += 1;
-    
+    sprite.output.x ++;
     Happy.AnimateSprite(sprite);
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
     Happy.DrawSprite(sprite);
     Init.context.fillText("hello world!",box.x, 300, 500);
-
-    if (Happy.MouseHover(sprite.output)){
-        console.log("Hovering!");
-        window.location.href = "page.html"
-    }
 }
 
 
-Happy.HandleEvents();
+//Happy.HandleEvents();
 Main();

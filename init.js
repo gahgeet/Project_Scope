@@ -1,3 +1,5 @@
+import * as Shape from "./shape.js"
+
 document.title = "hello world";
 const cnvs = document.createElement('canvas');
 if (!cnvs){
@@ -16,6 +18,7 @@ export const context = ctx;
 
 class State {
     lastTime = 0;
+    mousePosition = new Shape.Vector2();
 };
 
 export const state = new State();
