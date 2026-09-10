@@ -20,6 +20,11 @@ export function HandleEvents(){
         Init.state.mousePosition.x = e.offsetX;
         Init.state.mousePosition.y = e.offsetY;
     });
+    window.addEventListener("pageshow",function(e){
+        if (e.persisted) {
+            window.location.reload();
+        }
+    });
 
 }
 
