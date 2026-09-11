@@ -21,6 +21,7 @@ class State {
     mousePosition = new Shape.Vector2();
     loaded = false;
     assetCount = 0;
+    mouseRelease = false;
 };
 
 export const state = new State();

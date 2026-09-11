@@ -11,8 +11,44 @@ export class Sprite{
     exposure = 0;
     amount = 0;
     counter = 0;
-}
+};
 
+export class Button{
+    idleSprite = new Sprite();
+    hoverSprite = new Sprite();
+    downSprite = new Sprite();
+    callback = function(){};
+
+    /**
+     * @type {Button | null}
+     */
+    next = null;
+}
+/**
+ * 
+ * @param {string} idleSrc 
+ * @param {number} amountIdle 
+ * @param {string} hoverSrc 
+ * @param {number} amountHover 
+ * @param {string} downSrc 
+ * @param {number} amountDown 
+ * @param {Shape.Vector2} position 
+ * @param {Shape.Vector2} division 
+ * @param {number} exposure 
+ * @param {number} scale 
+ * @param callback 
+ */
+export function CreateButton(idleSrc,amountIdle,hoverSrc,amountHover,downSrc,amountDown,position,division,exposure,scale,callback = function(){}){
+    const button = new Button();
+    button.idleSprite = CreateSprite(idleSrc,position,division,amountIdle,exposure,scale);
+    button.hoverSprite = CreateSprite(hoverSrc,position,division,amountHover,exposure,scale);
+    button.downSprite = CreateSprite(downSrc,position,division,amountDown,exposure,scale);
+    console.log("button positions:")
+    console.log(position.x);
+    console.log(position.y);
+    button.callback = callback;
+    return button;
+}
 
 export function HandleEvents(){
     window.addEventListener("resize",ResizeCanvas);
@@ -24,6 +60,13 @@ export function HandleEvents(){
         if (e.persisted) {
             window.location.reload();
         }
+    });
+    window.addEventListener("mouseup",function(){
+        Init.state.mouseRelease = true;
+        Init.state.mouseDown = false;
+    });
+    window.addEventListener("mousedown",function(){
+        Init.state.mouseDown = true;
     });
 
 }
@@ -155,4 +198,32 @@ export function MouseHover(rectangle){
         return true;
     }
     return false;
+}
+/**
+ * 
+ * @param {Shape.Rectangle} rectangle 
+ */
+export function AreaClicked(rectangle){
+    if (MouseHover(rectangle)&&Init.state.mouseRelease) return true;
+    return false;
+}
+/**
+ * 
+ * @param {Button} button 
+ */
+export function ButtonRun(button){
+    AreaClicked(button.idleSprite.output);
+    if(!MouseHover(button.idleSprite.output)){
+        AnimateSprite(button.idleSprite);
+        DrawSprite(button.idleSprite);
+    }else{
+        if(Init.state.mouseDown){
+            AnimateSprite(button.downSprite);
+            DrawSprite(button.downSprite);
+        }else{
+            AnimateSprite(button.hoverSprite);
+            DrawSprite(button.hoverSprite);
+        }
+    }
+    console.log("animating button!");
 }
