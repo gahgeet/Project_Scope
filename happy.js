@@ -2,6 +2,7 @@ import * as Init from "./init.js"
 import * as Shape from "./shape.js"
 
 
+
 export class Sprite{
     image = new Image();
     source = new Shape.Rectangle();

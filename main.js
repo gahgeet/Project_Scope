@@ -40,3 +40,10 @@ function Main(){
 
 Happy.HandleEvents();
 Main();
+
+
+//createbutton->button gets added to default space, increments position,
+//if space gets added,create space at current y position,
+//if create button-> add button to latest space, increment position.
+//if button exists previously, create new button at current x position,
+//should i create a type agnostic way of handling elements?

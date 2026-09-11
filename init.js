@@ -22,7 +22,13 @@ class State {
     loaded = false;
     assetCount = 0;
     mouseRelease = false;
+    mouseDown = false;
 };
 
 export const state = new State();
 state.lastTime = performance.now();
+
+export const TYPES = {
+    BUTTON: 0,
+    SPACE: 1
+};
