@@ -71,7 +71,12 @@ export function CreateButton({
  * @param {number} scale 
  * @param callback 
  */
-export function CreateButtonPro(idleSrc,amountIdle,hoverSrc,amountHover,downSrc,amountDown,position,division,exposure,scale,callback = function(){}){
+export function CreateButtonPro(
+    idleSrc,amountIdle,
+    hoverSrc,amountHover,
+    downSrc,amountDown,
+    position,division,exposure,scale,
+    callback = function(){}){
     const button = new Button();
     button.idleSprite = CreateSprite(idleSrc,position,division,amountIdle,exposure,scale);
     button.hoverSprite = CreateSprite(hoverSrc,position,division,amountHover,exposure,scale);
