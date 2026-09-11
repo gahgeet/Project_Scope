@@ -212,7 +212,9 @@ export function AreaClicked(rectangle){
  * @param {Button} button 
  */
 export function ButtonRun(button){
-    AreaClicked(button.idleSprite.output);
+    if(AreaClicked(button.idleSprite.output)){
+        button.callback();
+    }
     if(!MouseHover(button.idleSprite.output)){
         AnimateSprite(button.idleSprite);
         DrawSprite(button.idleSprite);

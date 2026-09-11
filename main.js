@@ -17,7 +17,10 @@ const button = Happy.CreateButton(
     "./images/sheet_idle.png",16,
     "./images/sheet_hover.png",16,
     "./images/sheet_down.png",16,
-    {x:200,y:200},{x:4,y:4},10,0.1
+    {x:200,y:200},{x:4,y:4},10,0.1,
+    function(){
+        window.location.href = "page.html"
+    }
 );
 
 let frames = 0;
