@@ -250,9 +250,6 @@ export function AreaClicked(rectangle){
  * @param {Button} button 
  */
 export function ButtonRun(button){
-    if(AreaClicked(button.idleSprite.output)){
-        button.callback();
-    }
     if(!MouseHover(button.idleSprite.output)){
         LoopSprite(button.idleSprite);
         DrawSprite(button.idleSprite);
@@ -263,6 +260,10 @@ export function ButtonRun(button){
         }else{
             LoopSprite(button.hoverSprite);
             DrawSprite(button.hoverSprite);
+        }
+
+        if(Init.state.mouseRelease){
+            button.callback();
         }
     }
     //console.log("animating button!");
