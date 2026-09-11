@@ -24,6 +24,39 @@ export class Button{
      */
     next = null;
 }
+
+
+export class ButtonSpriteAmount{
+    idle = 0;
+    hover = 0;
+    down = 0;
+}
+
+/**
+ * 
+ * @param {*} buttonInfo 
+ * @returns 
+ */
+export function CreateButton({
+    name,
+    amount,
+    position,
+    division,
+    exposure=10,
+    scale=1.0,
+    callback=function(){}
+} = ({})) {
+   return CreateButtonPro(//slow
+        `./images/${name}_idle.png`,amount.idle,
+        `./images/${name}_hover.png`,amount.hover,
+        `./images/${name}_down.png`,amount.down,
+        position,
+        division,
+        exposure,
+        scale,
+        callback
+    ); 
+}
 /**
  * 
  * @param {string} idleSrc 
@@ -38,7 +71,7 @@ export class Button{
  * @param {number} scale 
  * @param callback 
  */
-export function CreateButton(idleSrc,amountIdle,hoverSrc,amountHover,downSrc,amountDown,position,division,exposure,scale,callback = function(){}){
+export function CreateButtonPro(idleSrc,amountIdle,hoverSrc,amountHover,downSrc,amountDown,position,division,exposure,scale,callback = function(){}){
     const button = new Button();
     button.idleSprite = CreateSprite(idleSrc,position,division,amountIdle,exposure,scale);
     button.hoverSprite = CreateSprite(hoverSrc,position,division,amountHover,exposure,scale);
@@ -138,7 +171,7 @@ export function DrawSprite(sprite){
  * 
  * @param {Sprite} sprite 
  */
-export function AnimateSprite(sprite){
+export function LoopSprite(sprite){
     sprite.source.x = sprite.current.x * sprite.source.w;
     sprite.source.y = sprite.current.y * sprite.source.h;
     sprite.counter ++;
@@ -216,16 +249,16 @@ export function ButtonRun(button){
         button.callback();
     }
     if(!MouseHover(button.idleSprite.output)){
-        AnimateSprite(button.idleSprite);
+        LoopSprite(button.idleSprite);
         DrawSprite(button.idleSprite);
     }else{
         if(Init.state.mouseDown){
-            AnimateSprite(button.downSprite);
+            LoopSprite(button.downSprite);
             DrawSprite(button.downSprite);
         }else{
-            AnimateSprite(button.hoverSprite);
+            LoopSprite(button.hoverSprite);
             DrawSprite(button.hoverSprite);
         }
     }
-    console.log("animating button!");
+    //console.log("animating button!");
 }

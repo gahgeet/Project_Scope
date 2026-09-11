@@ -15,7 +15,7 @@ function Main(){
     frames ++;
     box.x += 1;
     sprite.output.x ++;
-    Happy.AnimateSprite(sprite);
+    Happy.LoopSprite(sprite);
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
     Happy.DrawSprite(sprite);

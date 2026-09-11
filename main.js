@@ -8,20 +8,14 @@ const sprite = Happy.CreateSprite(
     {x:100,y:100},{x:4,y:4},16,10,0.1
 );
 
-//create sprite idle
-//create sprite hover
-//create sprite down
-//create button
-
-const button = Happy.CreateButton(
-    "./images/sheet_idle.png",16,
-    "./images/sheet_hover.png",16,
-    "./images/sheet_down.png",16,
-    {x:200,y:200},{x:4,y:4},10,0.1,
-    function(){
+const button = Happy.CreateButton({
+    name:"sheet",amount:{idle:16,hover:16,down:16},
+    position:{x:100,y:300},division:{x:4,y:4},
+    scale:0.1,
+    callback:function(){
         window.location.href = "page.html"
     }
-);
+});
 
 let frames = 0;
 function Main(){
@@ -29,7 +23,7 @@ function Main(){
     frames ++;
     box.x += 1;
     
-    Happy.AnimateSprite(sprite);
+    Happy.LoopSprite(sprite);
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
     Happy.DrawSprite(sprite);
