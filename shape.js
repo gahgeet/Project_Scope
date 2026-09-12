@@ -10,9 +10,4 @@ export class Vector2{
     y = 0;
 }
 
-export class Element{
-    next = null;
-    data = null;
-    type = "";
-};
 

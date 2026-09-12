@@ -19,11 +19,6 @@ export class Button{
     hoverSprite = new Sprite();
     downSprite = new Sprite();
     callback = function(){};
-
-    /**
-     * @type {Button | null}
-     */
-    next = null;
 }
 
 
@@ -33,6 +28,7 @@ export class ButtonSpriteAmount{
     down = 0;
 }
 
+
 /**
  * 
  * @param {*} buttonInfo 
@@ -40,23 +36,26 @@ export class ButtonSpriteAmount{
  */
 export function CreateButton({
     name,
-    amount,
+    amount={idle:1,hover:1,down:1},
     position,
     division,
     exposure=10,
     scale=1.0,
     callback=function(){}
 } = ({})) {
-   return CreateButtonPro(//slow
-        `./images/${name}_idle.png`,amount.idle,
-        `./images/${name}_hover.png`,amount.hover,
-        `./images/${name}_down.png`,amount.down,
-        position,
-        division,
-        exposure,
-        scale,
-        callback
-    ); 
+    AddElement(
+        Init.TYPES.BUTTON,
+        CreateButtonPro(//slow
+            `./images/${name}_idle.png`,amount.idle,
+            `./images/${name}_hover.png`,amount.hover,
+            `./images/${name}_down.png`,amount.down,
+            position,
+            division,//might just load all of them as horizontal sheets
+            exposure,
+            scale,
+            callback
+        )
+    ); //instead of returning the button, allocate it as an element onto init.state
 }
 /**
  * 
@@ -79,9 +78,9 @@ export function CreateButtonPro(
     position,division,exposure,scale,
     callback = function(){}){
     const button = new Button();
-    button.idleSprite = CreateSprite(idleSrc,position,division,amountIdle,exposure,scale);
-    button.hoverSprite = CreateSprite(hoverSrc,position,division,amountHover,exposure,scale);
-    button.downSprite = CreateSprite(downSrc,position,division,amountDown,exposure,scale);
+    button.idleSprite = CreateSpritePro(idleSrc,position,division,amountIdle,exposure,scale);
+    button.hoverSprite = CreateSpritePro(hoverSrc,position,division,amountHover,exposure,scale);
+    button.downSprite = CreateSpritePro(downSrc,position,division,amountDown,exposure,scale);
     console.log("button positions:")
     console.log(position.x);
     console.log(position.y);
@@ -133,9 +132,21 @@ export function DrawRectangle(color,rectangle){
  * @param {number} amount 
  * @param {number} exposure 
  * @param {number} scale 
- * @returns 
  */
 export function CreateSprite(path,position,division,amount,exposure,scale){
+    AddElement(Init.TYPES.SPRITE,CreateSpritePro(path,position,division,amount,exposure,scale));
+}
+/**
+ * 
+ * @param {string} path 
+ * @param {Shape.Vector2} position 
+ * @param {Shape.Vector2} division 
+ * @param {number} amount 
+ * @param {number} exposure 
+ * @param {number} scale 
+ * @returns 
+ */
+export function CreateSpritePro(path,position,division,amount,exposure,scale){
     const sprite = new Sprite();
     sprite.image.src = path;
     Init.state.assetCount ++;
@@ -250,7 +261,7 @@ export function AreaClicked(rectangle){
  * 
  * @param {Button} button 
  */
-export function ButtonRun(button){
+export function RunButton(button){
     if(!MouseHover(button.idleSprite.output)){
         LoopSprite(button.idleSprite);
         DrawSprite(button.idleSprite);
@@ -268,4 +279,49 @@ export function ButtonRun(button){
         }
     }
     //console.log("animating button!");
+}
+/**
+ * 
+ * @param {Sprite} sprite 
+ */
+export function RunSprite(sprite){
+    LoopSprite(sprite);
+    DrawSprite(sprite);
+}
+
+/**
+ * 
+ * @param {Init.G_ElementArray} array 
+ * @param {any} data 
+ * @param {number} type 
+ * @returns 
+ */
+export function AppendElement(array,type,data){
+    array.list.push(new Init.G_Element());
+    array.list[array.list.length-1].data = data;
+    array.list[array.list.length-1].type = type;
+    return array.list;
+}
+
+/**
+ * 
+ * @param {number} type 
+ * @param {any} data 
+ */
+export function AddElement(type,data){
+    AppendElement(Init.state.elements,type,data);
+}
+
+export function RunElements(){
+    //each element
+    for (let i = 0; i < Init.state.elements.list.length; i++){
+        //check the type
+        if (Init.state.elements.list[i].type===Init.TYPES.SPRITE){
+            //draw sprite
+            RunSprite(Init.state.elements.list[i].data);
+        }
+        else if (Init.state.elements.list[i].type===Init.TYPES.BUTTON){
+            RunButton(Init.state.elements.list[i].data);
+        }
+    }
 }

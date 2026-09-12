@@ -16,6 +16,22 @@ if (!ctx) {
 }
 export const context = ctx;
 
+export const TYPES = {
+    BUTTON: 0,
+    SPRITE: 1
+};
+
+export class G_ElementArray{
+    /** @type{G_Element[]} */
+    list = [];
+}
+
+export class G_Element{
+    /** @type {any} */
+    data = null;
+    type = -1;
+};
+
 class State {
     lastTime = 0;
     mousePosition = new Shape.Vector2();
@@ -23,12 +39,8 @@ class State {
     assetCount = 0;
     mouseRelease = false;
     mouseDown = false;
+    elements = new G_ElementArray();
 };
 
 export const state = new State();
 state.lastTime = performance.now();
-
-export const TYPES = {
-    BUTTON: 0,
-    SPACE: 1
-};
