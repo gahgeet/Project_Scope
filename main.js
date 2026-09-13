@@ -22,8 +22,13 @@ Happy.CreateButton({
         window.location.href = "page.html"
     }
 });
-
-
+//disable scrolling: COMPLETE!
+//text drawing investigation: 
+////font loading. COMPLETE!
+////how do I handle multiple fonts? COMPLETE!
+////download a ttf and load them... COMPLETE!
+////text wrapping... High priority
+////animating the text? low priority
  
 let frames = 0;
 function Main(){
@@ -34,8 +39,9 @@ function Main(){
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
     //Init.context.fillText("hello world!",box.x, 300, 500);
-    Happy.DrawText("hello world!",box.x,300,500);
-
+    Happy.DrawTextDefault("hello world!",box.x,300);
+    Happy.DrawTextPro("Emily Street","EMILY STREETz",300,500,40);
+    Happy.DrawTextPro("Super Bouncer","SUPER bouncED",600,500,40);
 
     //Happy.RunButton(button);
     Happy.RunElements();
@@ -43,6 +49,8 @@ function Main(){
     Init.state.mouseRelease = false;
 }
 
+Init.LoadFont("Emily Street");
+Init.LoadFont("Super Bouncer");
 Happy.HandleEvents();
 Main();
 

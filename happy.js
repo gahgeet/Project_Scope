@@ -162,16 +162,27 @@ export function DrawRectangle(color,rectangle){
 }
 /**
  * 
+ * @param {string} fontName
  * @param {string} text 
  * @param {number} x 
  * @param {number} y 
- * @param {number} width 
+ * @param {number} size
  */
-export function DrawText(text,x,y,width){
+export function DrawTextPro(fontName,text,x,y,size,){
     Init.state.inputRectangle.x = x;
     Init.state.inputRectangle.y = y;
     const vRec = VirtualizeSpace(Init.state.inputRectangle);
-    Init.context.fillText(text,vRec.x,vRec.y,width);
+    Init.context.font = `${size}px ${fontName}, arial`;
+    Init.context.fillText(text,vRec.x,vRec.y);
+}
+/**
+ * 
+ * @param {string} text 
+ * @param {number} x 
+ * @param {number} y 
+ */
+export function DrawTextDefault(text,x,y){
+    DrawTextPro("arial",text,x,y,12);
 }
 /**
  * 

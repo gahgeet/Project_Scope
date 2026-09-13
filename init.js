@@ -11,6 +11,21 @@ canvas.height = window.innerHeight;
 canvas.style.backgroundColor = "rgb(255,100,150)";
 document.body.appendChild(canvas);
 const ctx = canvas.getContext("2d");
+
+document.body.style.overflow = "hidden";
+
+/**
+ * 
+ * @param {string} name 
+ */
+export function LoadFont(name){
+    const newFont = new FontFace(name,`url('./fonts/${name}.ttf')`);
+    newFont.load().then(function(font){
+        document.fonts.add(font);
+        console.log("loaded font!");
+    });
+}
+
 if (!ctx) {
     throw new Error("context was not created.");
 }
