@@ -9,17 +9,15 @@ Happy.CreateSprite(
 );
 
 Happy.CreateButton({
-    name:"sheet",amount:{idle:16,hover:16,down:16},
-    position:{x:100,y:300},division:{x:4,y:4},
-    scale:0.1,
+    name:"sheet",amount:{idle:4,hover:4,down:4},
+    position:{x:100,y:300},scale:0.1,
     callback:function(){
         window.location.href = "page.html"
     }
 });
 Happy.CreateButton({
-    name:"sheet",amount:{idle:16,hover:16,down:16},
-    position:{x:200,y:300},division:{x:4,y:4},
-    scale:0.1,
+    name:"sheet",amount:{idle:4,hover:4,down:4},
+    position:{x:200,y:300},scale:0.1,
     callback:function(){
         window.location.href = "page.html"
     }
@@ -32,10 +30,11 @@ function Main(){
     if (!Happy.RunFPS(60,Main))return;
     frames ++;
     box.x += 1;
-    
+    //Init.state.scroll.y -= 1;
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
-    Init.context.fillText("hello world!",box.x, 300, 500);
+    //Init.context.fillText("hello world!",box.x, 300, 500);
+    Happy.DrawText("hello world!",box.x,300,500);
 
 
     //Happy.RunButton(button);

@@ -28,7 +28,6 @@ export class ButtonSpriteAmount{
     down = 0;
 }
 
-
 /**
  * 
  * @param {*} buttonInfo 
@@ -37,9 +36,7 @@ export class ButtonSpriteAmount{
 export function CreateButton({
     name,
     amount={idle:1,hover:1,down:1},
-    position,
-    division,
-    exposure=10,
+    position= new Shape.Vector2(),
     scale=1.0,
     callback=function(){}
 } = ({})) {
@@ -50,13 +47,13 @@ export function CreateButton({
             `./images/${name}_hover.png`,amount.hover,
             `./images/${name}_down.png`,amount.down,
             position,
-            division,//might just load all of them as horizontal sheets
-            exposure,
             scale,
             callback
         )
     ); //instead of returning the button, allocate it as an element onto init.state
 }
+
+
 /**
  * 
  * @param {string} idleSrc 
@@ -66,8 +63,6 @@ export function CreateButton({
  * @param {string} downSrc 
  * @param {number} amountDown 
  * @param {Shape.Vector2} position 
- * @param {Shape.Vector2} division 
- * @param {number} exposure 
  * @param {number} scale 
  * @param callback 
  */
@@ -75,17 +70,56 @@ export function CreateButtonPro(
     idleSrc,amountIdle,
     hoverSrc,amountHover,
     downSrc,amountDown,
-    position,division,exposure,scale,
+    position,scale,
     callback = function(){}){
     const button = new Button();
-    button.idleSprite = CreateSpritePro(idleSrc,position,division,amountIdle,exposure,scale);
-    button.hoverSprite = CreateSpritePro(hoverSrc,position,division,amountHover,exposure,scale);
-    button.downSprite = CreateSpritePro(downSrc,position,division,amountDown,exposure,scale);
+    button.idleSprite = CreateButtonSprite(idleSrc,position,amountIdle,scale);
+    button.hoverSprite = CreateButtonSprite(hoverSrc,position,amountHover,scale);
+    button.downSprite = CreateButtonSprite(downSrc,position,amountDown,scale);
     console.log("button positions:")
     console.log(position.x);
     console.log(position.y);
     button.callback = callback;
     return button;
+}
+
+
+/**
+ * 
+ * @param {string} path 
+ * @param {Shape.Vector2} position 
+ * @param {number} amount 
+ * @param {number} scale 
+ * @returns 
+ */
+export function CreateButtonSprite(path,position,amount,scale){
+    const sprite = new Sprite();
+    sprite.image.src = path;
+    Init.state.assetCount ++;
+    sprite.image.onload = function(){
+        console.log("loaded!");
+        console.log(sprite.image.naturalWidth);
+        console.log(sprite.image.naturalHeight)
+        Init.state.assetCount --;
+        sprite.source.w = sprite.image.naturalWidth/amount;
+        sprite.source.h = sprite.image.naturalHeight;
+        sprite.output.w = sprite.source.w*scale;
+        sprite.output.h = sprite.source.h*scale;
+    }
+    sprite.source.x = 0;
+    sprite.source.y = 0;
+    
+    sprite.output.x = position.x;
+    sprite.output.y = position.y;
+    
+    sprite.current.x = 0;
+    sprite.current.y = 0;
+    sprite.amount = amount;
+    sprite.counter = 0;
+    sprite.division.x = amount;
+    sprite.division.y = 1;
+    sprite.exposure = 5;
+    return sprite;
 }
 
 export function HandleEvents(){
@@ -120,9 +154,24 @@ export function ClearBackground(){
  */
 export function DrawRectangle(color,rectangle){
     Init.context.fillStyle = color;
+    const vRec = VirtualizeSpace(rectangle);
     Init.context.fillRect(
-        rectangle.x,rectangle.y,rectangle.w,rectangle.h
+        vRec.x,vRec.y,
+        vRec.w,vRec.h
     );
+}
+/**
+ * 
+ * @param {string} text 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} width 
+ */
+export function DrawText(text,x,y,width){
+    Init.state.inputRectangle.x = x;
+    Init.state.inputRectangle.y = y;
+    const vRec = VirtualizeSpace(Init.state.inputRectangle);
+    Init.context.fillText(text,vRec.x,vRec.y,width);
 }
 /**
  * 
@@ -174,14 +223,17 @@ export function CreateSpritePro(path,position,division,amount,exposure,scale){
     sprite.exposure = exposure;
     return sprite;
 }
+
 /**
  * @param {Sprite} sprite 
  */
 export function DrawSprite(sprite){
+    const vRec = VirtualizeSpace(sprite.output);
     Init.context.drawImage(
         sprite.image,
         sprite.source.x,sprite.source.y,sprite.source.w,sprite.source.h,
-        sprite.output.x,sprite.output.y,sprite.output.w,sprite.output.h
+        vRec.x,vRec.y,
+        vRec.w,vRec.h
     );
 }
 /**
@@ -238,12 +290,26 @@ export function ResizeCanvas(){
  * @param {Shape.Rectangle} rectangle 
  * @returns 
  */
+export function VirtualizeSpace(rectangle){
+    Init.state.outputRectangle.x = rectangle.x;
+    Init.state.outputRectangle.y = rectangle.y + Init.state.scroll.y;
+    Init.state.outputRectangle.w = rectangle.w;
+    Init.state.outputRectangle.h = rectangle.h;
+    return Init.state.outputRectangle;
+}
+
+/**
+ * 
+ * @param {Shape.Rectangle} rectangle 
+ * @returns 
+ */
 export function MouseHover(rectangle){
+    const vRec = VirtualizeSpace(rectangle);
     if (
-        Init.state.mousePosition.x >= rectangle.x
-        && Init.state.mousePosition.x <= rectangle.x+rectangle.w
-        && Init.state.mousePosition.y >= rectangle.y
-        && Init.state.mousePosition.y <= rectangle.y+rectangle.h
+        Init.state.mousePosition.x >= vRec.x
+        && Init.state.mousePosition.x <= vRec.x+vRec.w
+        && Init.state.mousePosition.y >= vRec.y
+        && Init.state.mousePosition.y <= vRec.y+vRec.h
     ){
         return true;
     }

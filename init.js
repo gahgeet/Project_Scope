@@ -39,6 +39,9 @@ class State {
     assetCount = 0;
     mouseRelease = false;
     mouseDown = false;
+    scroll = new Shape.Vector2;
+    inputRectangle = new Shape.Rectangle();
+    outputRectangle = new Shape.Rectangle();
     elements = new G_ElementArray();
 };
 
