@@ -47,6 +47,14 @@ export class G_Element{
     type = -1;
 };
 
+export class G_TextArray{
+    font = "";
+    list = new Array();
+    origin = new Shape.Vector2;
+    size = 0;
+    maxWidth = 0;
+}
+
 class State {
     lastTime = 0;
     mousePosition = new Shape.Vector2();
@@ -58,6 +66,8 @@ class State {
     inputRectangle = new Shape.Rectangle();
     outputRectangle = new Shape.Rectangle();
     elements = new G_ElementArray();
+    /** @type {G_TextArray[]} */
+    textArray = [];
 };
 
 export const state = new State();

@@ -162,13 +162,74 @@ export function DrawRectangle(color,rectangle){
 }
 /**
  * 
+ * @param {string} font
+ * @param {string} text 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} size
+ * @param {number} maxWidth
+ */
+export function CreateText(font,text,x,y,size,maxWidth){
+    const textArray = new Init.G_TextArray();
+    textArray.font = font;
+    textArray.list = text.split(' ');
+    textArray.origin.x = x;
+    textArray.origin.y = y;
+    textArray.size = size;
+    textArray.maxWidth = maxWidth;
+    Init.state.textArray.push(textArray);
+}
+
+export function DrawStateText(){
+    const textArray = Init.state.textArray;
+    for(let i = 0; i < textArray.length; i++){
+        DrawTextBlock(textArray[i]);
+    }
+}
+
+/**
+ * 
+ * @param {Init.G_TextArray} textArray 
+ */
+export function DrawTextBlock(textArray){
+    Init.context.font = `${textArray.size}px ${textArray.font}, arial`;
+    let posX = textArray.origin.x;
+    let posY = textArray.origin.y;
+    const height = textArray.size * 1.1;
+    const space = Init.context.measureText(" ");
+
+    for (let i = 0; i < textArray.list.length; i++){
+        DrawTextPro(textArray.list[i],posX,posY);
+        posX += Init.context.measureText(textArray.list[i]).width+space.width;
+        if (posX > textArray.origin.x + textArray.maxWidth){
+            posX = textArray.origin.x;
+            posY += height;
+        }
+    }
+}
+
+/**
+ * 
+ * @param {string} text 
+ * @param {number} x 
+ * @param {number} y 
+ */
+export function DrawTextPro(text,x,y){
+    Init.state.inputRectangle.x = x;
+    Init.state.inputRectangle.y = y;
+    const vRec = VirtualizeSpace(Init.state.inputRectangle);
+    Init.context.fillText(text,vRec.x,vRec.y);
+}
+
+/**
+ * 
  * @param {string} fontName
  * @param {string} text 
  * @param {number} x 
  * @param {number} y 
  * @param {number} size
  */
-export function DrawTextPro(fontName,text,x,y,size,){
+export function DrawTextBase(fontName,text,x,y,size,){
     Init.state.inputRectangle.x = x;
     Init.state.inputRectangle.y = y;
     const vRec = VirtualizeSpace(Init.state.inputRectangle);
@@ -182,7 +243,7 @@ export function DrawTextPro(fontName,text,x,y,size,){
  * @param {number} y 
  */
 export function DrawTextDefault(text,x,y){
-    DrawTextPro("arial",text,x,y,12);
+    DrawTextBase("arial",text,x,y,12);
 }
 /**
  * 
@@ -401,4 +462,6 @@ export function RunElements(){
             RunButton(Init.state.elements.list[i].data);
         }
     }
+
+    DrawStateText();
 }

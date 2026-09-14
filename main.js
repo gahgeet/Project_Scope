@@ -27,21 +27,28 @@ Happy.CreateButton({
 ////font loading. COMPLETE!
 ////how do I handle multiple fonts? COMPLETE!
 ////download a ttf and load them... COMPLETE!
-////text wrapping... High priority
-////animating the text? low priority
+////text wrapping... COMPLETE!
+////-declare text to be drawn... check!
+////-split it into parts to wrap...check!
+////-this means I need an array in the init state for strings... check!
+////-make a text Array class for this...Check!
+////-within the loop draw the text that is presplit for me... check!
+////animating the text? low priority...
+
+Happy.CreateText("Super Bouncer","hello emily emily oo la la test check texting",500,300,30,200);
  
 let frames = 0;
 function Main(){
     if (!Happy.RunFPS(60,Main))return;
     frames ++;
     box.x += 1;
-    //Init.state.scroll.y -= 1;
+    Init.state.scroll.y -= 1;
     Happy.ClearBackground();
     Happy.DrawRectangle("rgb(0,0,255)",box);
     //Init.context.fillText("hello world!",box.x, 300, 500);
     Happy.DrawTextDefault("hello world!",box.x,300);
-    Happy.DrawTextPro("Emily Street","EMILY STREETz",300,500,40);
-    Happy.DrawTextPro("Super Bouncer","SUPER bouncED",600,500,40);
+    Happy.DrawTextBase("Emily Street","EMILY STREETz",300,500,40);
+    Happy.DrawTextBase("Super Bouncer","SUPER bouncED",600,500,40);
 
     //Happy.RunButton(button);
     Happy.RunElements();
