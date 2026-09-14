@@ -34,16 +34,18 @@ export function GetLatestElementIndex(){
 
 /**
  * 
- * @param {*} buttonInfo 
+ * @param {string} name 
+ * @param {ButtonSpriteAmount} amount 
+ * @param {Shape.Vector2} position 
+ * @param {number} scale 
  * @returns 
  */
-export function CreateButton({
+export function CreateButton(
     name,
     amount={idle:1,hover:1,down:1},
     position= new Shape.Vector2(),
     scale=1.0,
-    callback=function(){}
-} = ({})) {
+    callback=function(){}) {
     AddElement(
         Init.TYPES.BUTTON,
         CreateButtonPro(//slow
@@ -195,9 +197,9 @@ export function CreateText(font,text,x,y,size,maxWidth){
 /**
  * 
  * @param {Init.G_TextArray} textArray 
- * @param {Shape.Rectangle} parent 
  */
-export function DrawTextBlock(textArray,parent){
+export function DrawTextBlock(textArray){
+    const parent = Init.state.parentBufferRectangle;
     Init.context.font = `${textArray.size}px ${textArray.font}, arial`;
     let posX = textArray.origin.x;
     let posY = textArray.origin.y;
@@ -306,10 +308,10 @@ export function CreateSpritePro(path,position,division,amount,exposure,scale){
 /**
  * 
  * @param {Sprite} sprite 
- * @param {Shape.Rectangle} parent 
  */
-export function DrawSprite(sprite,parent){
+export function DrawSprite(sprite){
     const vRec = VirtualizeSpace(sprite.output);
+    const parent = Init.state.parentBufferRectangle;
     Init.context.drawImage(
         sprite.image,
         sprite.source.x,sprite.source.y,sprite.source.w,sprite.source.h,
@@ -384,11 +386,11 @@ export function VirtualizeSpace(rectangle){
 /**
  * 
  * @param {Shape.Rectangle} rectangle 
- * @param {Shape.Rectangle} parent 
  * @returns 
  */
-export function MouseHover(rectangle,parent){
+export function MouseHover(rectangle){
     const vRec = VirtualizeSpace(rectangle);
+    const parent = Init.state.parentBufferRectangle;
     if (
         Init.state.mousePosition.x >= vRec.x+parent.x
         && Init.state.mousePosition.x <= vRec.x+vRec.w+parent.x
@@ -406,26 +408,25 @@ export function MouseHover(rectangle,parent){
  * @returns 
  */
 export function AreaClicked(rectangle,parent){
-    if (MouseHover(rectangle,parent)&&Init.state.mouseRelease) return true;
+    if (MouseHover(rectangle)&&Init.state.mouseRelease) return true;
     return false;
 }
 
 /**
  * 
  * @param {Button} button 
- * @param {Shape.Rectangle} parent 
  */
-export function RunButton(button,parent){
-    if(!MouseHover(button.idleSprite.output,parent)){
+export function RunButton(button){
+    if(!MouseHover(button.idleSprite.output)){
         LoopSprite(button.idleSprite);
-        DrawSprite(button.idleSprite,parent);
+        DrawSprite(button.idleSprite);
     }else{
         if(Init.state.mouseDown){
             LoopSprite(button.downSprite);
-            DrawSprite(button.downSprite,parent);
+            DrawSprite(button.downSprite);
         }else{
             LoopSprite(button.hoverSprite);
-            DrawSprite(button.hoverSprite,parent);
+            DrawSprite(button.hoverSprite);
         }
 
         if(Init.state.mouseRelease){
@@ -437,11 +438,10 @@ export function RunButton(button,parent){
 /**
  * 
  * @param {Sprite} sprite 
- * @param {Shape.Rectangle} parent 
  */
-export function RunSprite(sprite,parent){
+export function RunSprite(sprite){
     LoopSprite(sprite);
-    DrawSprite(sprite,parent);
+    DrawSprite(sprite);
 }
 
 /**
@@ -471,25 +471,46 @@ export function AddElement(type,data){
  * 
  * @param {Init.G_Element} element 
  */
-export function GetParentRec(element){
-    if(element.parent!=-1){
-        const parent = Init.state.elements.list[element.parent];
-        if(parent.type ===Init.TYPES.BUTTON){
+export function CalculateParentRec(element){
+    const parentBuffer = Init.state.parentBufferRectangle;
+    parentBuffer.x = 0;
+    parentBuffer.y = 0;
+    parentBuffer.w = 0;
+    parentBuffer.h = 0;
+    let parentPresent = element.parent!==-1;
+    while(parentPresent){
+        const parentElement = Init.state.elements.list[element.parent];
+        let pX = 0; let pY = 0; let pW = 0; let pH = 0;
+        if(parentElement.type === Init.TYPES.BUTTON){
             /**@type {Button} */
-            return(parent.data).idleSprite.output;
+            const current = parentElement.data;
+            const rec = current.idleSprite.output;
+            pX = rec.x; pY = rec.y; pW = rec.w; pH = rec.h;
         }
-        else if(parent.type===Init.TYPES.SPRITE){
-            /**@type {Sprite} */
-            return(parent.data).output;
+        else if(parentElement.type === Init.TYPES.SPRITE){
+            /** @type {Sprite} */
+            const current = parentElement.data;
+            const rec = current.output;
+            pX = rec.x; pY = rec.y; pW = rec.w; pH = rec.h;
         }
-        else if(parent.type===Init.TYPES.TEXT){
-            Init.state.outputRectangle.x = (parent.data).origin.x;
-            Init.state.outputRectangle.y = (parent.data).origin.y;
-            return (Init.state.outputRectangle);
+        else if(parentElement.type === Init.TYPES.TEXT){
+            /**@type {Init.G_TextArray} */
+            const current = parentElement.data;
+            pX = current.origin.x; pY = current.origin.y;
         }
+        parentBuffer.x += pX;
+        parentBuffer.y += pY;
+        parentBuffer.w += pW;
+        parentBuffer.h += pH;
+        
+        element = parentElement;
+        parentPresent = element.parent !== -1;
+        
+        
     }
-    return Init.blankParent;
 }
+
+
 
 export function RunElements(){
     //each element
@@ -497,17 +518,17 @@ export function RunElements(){
         //check the type
         const element = Init.state.elements.list[i];
         /**@type {Shape.Rectangle} */
-        const parentRec = GetParentRec(element);
+        CalculateParentRec(element);
         if (Init.state.elements.list[i].type===Init.TYPES.SPRITE){
             //draw sprite
-            RunSprite(element.data,parentRec);
+            RunSprite(element.data);
             
         }
         else if (Init.state.elements.list[i].type===Init.TYPES.BUTTON){
-            RunButton(element.data,parentRec);
+            RunButton(element.data);
         }
         else if (Init.state.elements.list[i].type===Init.TYPES.TEXT){
-            DrawTextBlock(element.data,parentRec);
+            DrawTextBlock(element.data);
         }
     }
 

@@ -67,6 +67,7 @@ class State {
     scroll = new Shape.Vector2;
     inputRectangle = new Shape.Rectangle();
     outputRectangle = new Shape.Rectangle();
+    parentBufferRectangle = new Shape.Rectangle();
     elements = new G_ElementArray();
 //    /** @type {G_TextArray[]} */
 //    textArray = [];
