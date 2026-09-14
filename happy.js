@@ -28,6 +28,10 @@ export class ButtonSpriteAmount{
     down = 0;
 }
 
+export function GetLatestElementIndex(){
+    return Init.state.elements.list.length-1;
+}
+
 /**
  * 
  * @param {*} buttonInfo 
@@ -51,6 +55,7 @@ export function CreateButton({
             callback
         )
     ); //instead of returning the button, allocate it as an element onto init.state
+    return GetLatestElementIndex();
 }
 
 
@@ -182,6 +187,7 @@ export function CreateText(font,text,x,y,size,maxWidth){
     Element.type = Init.TYPES.TEXT;
     Init.state.elements.list.push(Element);
     //Init.state.textArray.push(textArray);
+    return GetLatestElementIndex();
 }
 
 
@@ -189,8 +195,9 @@ export function CreateText(font,text,x,y,size,maxWidth){
 /**
  * 
  * @param {Init.G_TextArray} textArray 
+ * @param {Shape.Rectangle} parent 
  */
-export function DrawTextBlock(textArray){
+export function DrawTextBlock(textArray,parent){
     Init.context.font = `${textArray.size}px ${textArray.font}, arial`;
     let posX = textArray.origin.x;
     let posY = textArray.origin.y;
@@ -198,9 +205,9 @@ export function DrawTextBlock(textArray){
     const space = Init.context.measureText(" ");
 
     for (let i = 0; i < textArray.list.length; i++){
-        DrawTextPro(textArray.list[i],posX,posY);
+        DrawTextPro(textArray.list[i],posX+parent.x,posY+parent.y);
         posX += Init.context.measureText(textArray.list[i]).width+space.width;
-        if (posX > textArray.origin.x + textArray.maxWidth){
+        if (posX > textArray.origin.x + textArray.maxWidth + parent.x){
             posX = textArray.origin.x;
             posY += height;
         }
@@ -255,6 +262,7 @@ export function DrawTextDefault(text,x,y){
  */
 export function CreateSprite(path,position,division,amount,exposure,scale){
     AddElement(Init.TYPES.SPRITE,CreateSpritePro(path,position,division,amount,exposure,scale));
+    return GetLatestElementIndex();
 }
 /**
  * 
@@ -296,14 +304,16 @@ export function CreateSpritePro(path,position,division,amount,exposure,scale){
 }
 
 /**
+ * 
  * @param {Sprite} sprite 
+ * @param {Shape.Rectangle} parent 
  */
-export function DrawSprite(sprite){
+export function DrawSprite(sprite,parent){
     const vRec = VirtualizeSpace(sprite.output);
     Init.context.drawImage(
         sprite.image,
         sprite.source.x,sprite.source.y,sprite.source.w,sprite.source.h,
-        vRec.x,vRec.y,
+        vRec.x+parent.x,vRec.y+parent.y,
         vRec.w,vRec.h
     );
 }
@@ -369,18 +379,21 @@ export function VirtualizeSpace(rectangle){
     return Init.state.outputRectangle;
 }
 
+
+
 /**
  * 
  * @param {Shape.Rectangle} rectangle 
+ * @param {Shape.Rectangle} parent 
  * @returns 
  */
-export function MouseHover(rectangle){
+export function MouseHover(rectangle,parent){
     const vRec = VirtualizeSpace(rectangle);
     if (
-        Init.state.mousePosition.x >= vRec.x
-        && Init.state.mousePosition.x <= vRec.x+vRec.w
-        && Init.state.mousePosition.y >= vRec.y
-        && Init.state.mousePosition.y <= vRec.y+vRec.h
+        Init.state.mousePosition.x >= vRec.x+parent.x
+        && Init.state.mousePosition.x <= vRec.x+vRec.w+parent.x
+        && Init.state.mousePosition.y >= vRec.y+parent.y
+        && Init.state.mousePosition.y <= vRec.y+vRec.h+parent.y
     ){
         return true;
     }
@@ -389,26 +402,30 @@ export function MouseHover(rectangle){
 /**
  * 
  * @param {Shape.Rectangle} rectangle 
+ * @param {Shape.Rectangle} parent 
+ * @returns 
  */
-export function AreaClicked(rectangle){
-    if (MouseHover(rectangle)&&Init.state.mouseRelease) return true;
+export function AreaClicked(rectangle,parent){
+    if (MouseHover(rectangle,parent)&&Init.state.mouseRelease) return true;
     return false;
 }
+
 /**
  * 
  * @param {Button} button 
+ * @param {Shape.Rectangle} parent 
  */
-export function RunButton(button){
-    if(!MouseHover(button.idleSprite.output)){
+export function RunButton(button,parent){
+    if(!MouseHover(button.idleSprite.output,parent)){
         LoopSprite(button.idleSprite);
-        DrawSprite(button.idleSprite);
+        DrawSprite(button.idleSprite,parent);
     }else{
         if(Init.state.mouseDown){
             LoopSprite(button.downSprite);
-            DrawSprite(button.downSprite);
+            DrawSprite(button.downSprite,parent);
         }else{
             LoopSprite(button.hoverSprite);
-            DrawSprite(button.hoverSprite);
+            DrawSprite(button.hoverSprite,parent);
         }
 
         if(Init.state.mouseRelease){
@@ -420,10 +437,11 @@ export function RunButton(button){
 /**
  * 
  * @param {Sprite} sprite 
+ * @param {Shape.Rectangle} parent 
  */
-export function RunSprite(sprite){
+export function RunSprite(sprite,parent){
     LoopSprite(sprite);
-    DrawSprite(sprite);
+    DrawSprite(sprite,parent);
 }
 
 /**
@@ -449,20 +467,65 @@ export function AddElement(type,data){
     AppendElement(Init.state.elements,type,data);
 }
 
+/**
+ * 
+ * @param {Init.G_Element} element 
+ */
+export function GetParentRec(element){
+    if(element.parent!=-1){
+        const parent = Init.state.elements.list[element.parent];
+        if(parent.type ===Init.TYPES.BUTTON){
+            /**@type {Button} */
+            return(parent.data).idleSprite.output;
+        }
+        else if(parent.type===Init.TYPES.SPRITE){
+            /**@type {Sprite} */
+            return(parent.data).output;
+        }
+        else if(parent.type===Init.TYPES.TEXT){
+            Init.state.outputRectangle.x = (parent.data).origin.x;
+            Init.state.outputRectangle.y = (parent.data).origin.y;
+            return (Init.state.outputRectangle);
+        }
+    }
+    return Init.blankParent;
+}
+
 export function RunElements(){
     //each element
     for (let i = 0; i < Init.state.elements.list.length; i++){
         //check the type
+        const element = Init.state.elements.list[i];
+        /**@type {Shape.Rectangle} */
+        const parentRec = GetParentRec(element);
         if (Init.state.elements.list[i].type===Init.TYPES.SPRITE){
             //draw sprite
-            RunSprite(Init.state.elements.list[i].data);
+            RunSprite(element.data,parentRec);
+            
         }
         else if (Init.state.elements.list[i].type===Init.TYPES.BUTTON){
-            RunButton(Init.state.elements.list[i].data);
+            RunButton(element.data,parentRec);
         }
         else if (Init.state.elements.list[i].type===Init.TYPES.TEXT){
-            DrawTextBlock(Init.state.elements.list[i].data);
+            DrawTextBlock(element.data,parentRec);
         }
     }
 
+}
+
+/**
+ * 
+ * @param {number} parent 
+ * @param  {...number} children 
+ */
+export function Layout(parent, ...children){
+    if (children.length < 1){
+        console.log("no children present!");
+        return;
+    }
+    Init.state.elements.list[children[0]].parent = parent;
+
+    for (let i = 1; i < children.length;i++){
+        Init.state.elements.list[children[i]].parent = children[i-1];
+    }
 }

@@ -23,6 +23,25 @@ Happy.CreateButton({
     }
 });
 
+//create returns element index?
+//parent element contains array of indexes
+//createparent(parent,...children){children[0].parent = parent; for i=1; i<children.length; i++{children[i].parent = children[i-1]}  return index.}
+//
+
+Happy.Layout(
+    Happy.CreateSprite(
+        "./images/spritesheet.png",
+        {x:100,y:100},{x:4,y:4},16,10,0.1
+    ),
+    Happy.CreateButton({
+        name:"sheet",amount:{idle:4,hover:4,down:4},
+        position:{x:10,y:10},scale:0.1,
+        callback:function(){
+            window.location.href = "page.html"
+        }
+    })
+)
+
 
 Happy.CreateText("Super Bouncer","hello emily emily oo la la test check texting",500,300,30,200);
  

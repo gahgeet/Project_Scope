@@ -46,8 +46,9 @@ export class G_Element{
     /** @type {any} */
     data = null;
     type = -1;
+    parent = -1;
 };
-
+export const blankParent = new Shape.Rectangle();
 export class G_TextArray{
     font = "";
     list = new Array();
