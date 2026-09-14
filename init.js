@@ -33,7 +33,8 @@ export const context = ctx;
 
 export const TYPES = {
     BUTTON: 0,
-    SPRITE: 1
+    SPRITE: 1,
+    TEXT: 2,
 };
 
 export class G_ElementArray{
@@ -66,8 +67,8 @@ class State {
     inputRectangle = new Shape.Rectangle();
     outputRectangle = new Shape.Rectangle();
     elements = new G_ElementArray();
-    /** @type {G_TextArray[]} */
-    textArray = [];
+//    /** @type {G_TextArray[]} */
+//    textArray = [];
 };
 
 export const state = new State();

@@ -22,18 +22,7 @@ Happy.CreateButton({
         window.location.href = "page.html"
     }
 });
-//disable scrolling: COMPLETE!
-//text drawing investigation: 
-////font loading. COMPLETE!
-////how do I handle multiple fonts? COMPLETE!
-////download a ttf and load them... COMPLETE!
-////text wrapping... COMPLETE!
-////-declare text to be drawn... check!
-////-split it into parts to wrap...check!
-////-this means I need an array in the init state for strings... check!
-////-make a text Array class for this...Check!
-////-within the loop draw the text that is presplit for me... check!
-////animating the text? low priority...
+
 
 Happy.CreateText("Super Bouncer","hello emily emily oo la la test check texting",500,300,30,200);
  
@@ -48,7 +37,7 @@ function Main(){
     //Init.context.fillText("hello world!",box.x, 300, 500);
     Happy.DrawTextDefault("hello world!",box.x,300);
     Happy.DrawTextBase("Emily Street","EMILY STREETz",300,500,40);
-    Happy.DrawTextBase("Super Bouncer","SUPER bouncED",600,500,40);
+    Happy.DrawTextBase("Super Bouncer","SUPER bouncED",600,800,40);
 
     //Happy.RunButton(button);
     Happy.RunElements();
@@ -61,3 +50,23 @@ Init.LoadFont("Super Bouncer");
 Happy.HandleEvents();
 Main();
 
+//disable scrolling: COMPLETE!
+//text drawing investigation:
+////font loading. COMPLETE!
+
+////how do I handle multiple fonts? COMPLETE!
+
+////download a ttf and load them... COMPLETE!
+
+////text wrapping... COMPLETE!
+////-declare text to be drawn... check!
+////-split it into parts to wrap...check!
+////-this means I need an array in the init state for strings... check!
+////-make a text Array class for this...Check!
+////-within the loop draw the text that is presplit for me... check!
+
+//mutating text positions? medium priority...
+////-have CreateText()return an index number...
+////-grab the index number to mutate it?  or maybe have parent property?
+//implement text drawing within the element drawing procedure? COMPLETE!
+//animating the text? low priority...

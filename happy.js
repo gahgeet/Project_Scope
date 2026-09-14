@@ -177,15 +177,14 @@ export function CreateText(font,text,x,y,size,maxWidth){
     textArray.origin.y = y;
     textArray.size = size;
     textArray.maxWidth = maxWidth;
-    Init.state.textArray.push(textArray);
+    const Element = new Init.G_Element();
+    Element.data = textArray;
+    Element.type = Init.TYPES.TEXT;
+    Init.state.elements.list.push(Element);
+    //Init.state.textArray.push(textArray);
 }
 
-export function DrawStateText(){
-    const textArray = Init.state.textArray;
-    for(let i = 0; i < textArray.length; i++){
-        DrawTextBlock(textArray[i]);
-    }
-}
+
 
 /**
  * 
@@ -461,7 +460,9 @@ export function RunElements(){
         else if (Init.state.elements.list[i].type===Init.TYPES.BUTTON){
             RunButton(Init.state.elements.list[i].data);
         }
+        else if (Init.state.elements.list[i].type===Init.TYPES.TEXT){
+            DrawTextBlock(Init.state.elements.list[i].data);
+        }
     }
 
-    DrawStateText();
 }
